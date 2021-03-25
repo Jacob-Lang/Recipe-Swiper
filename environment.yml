@@ -1,0 +1,11 @@
+name: recipe_swiper
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - numpy
+  - pandas
+  - tensorflow
+  - matplotlib
+  - scikit-learn
+  - voila
