@@ -20,6 +20,8 @@ class Swiper():
         
         buttons = widgets.HBox([self.swipe_left, self.swipe_right], layout=widgets.Layout(justify_content='center'))
         output = widgets.Output(layout=widgets.Layout(height='500px'))      
+        # display buttons
+        display(widgets.VBox([output, buttons]))
         
         # first recipe
         self.action = self.model.call()
@@ -27,9 +29,6 @@ class Swiper():
         with output:
             self.display_recipe(self.action)
             clear_output(wait=True)
-
-        # display buttons
-        display(widgets.VBox([output, buttons]))
     
         
         def right(self):
