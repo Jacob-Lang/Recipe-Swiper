@@ -12,56 +12,45 @@ class Swiper():
         # widget buttons for each action
         self.swipe_right = widgets.Button(description='Yes please! :D')
         self.swipe_left = widgets.Button(description='No thanks. :|')
-        self.clicked_recipes_button = widgets.Button(description='See my liked recipes')
         
         self.swipe_left.on_click(lambda _ : self.left())
         self.swipe_right.on_click(lambda _ : self.right())
-        self.clicked_recipes_button.on_click(lambda _ : self.open_liked_recipe_links())
 
         self.recipe_html = widgets.HTML()
         self.swipe_buttons_box = widgets.HBox([self.swipe_left, self.swipe_right], layout=widgets.Layout(justify_content='center'))
-        self.empty_space_html = widgets.HTML("<br> <br> <br>")
-        self.clicked_recipes_button_box = widgets.VBox([self.empty_space_html, 
-                                                        widgets.HBox([self.clicked_recipes_button], layout=widgets.Layout(justify_content='center'))
-                                                       ]
-                                                      )
-        
-        self.click_count = 0 
-        self.liked_recipes = []
-        
-        
+        self.clicked_recipes_html_title = widgets.HTML("<br> <h3 align=\"center\"> Liked recipes: </h3>")
+        self.clicked_recipes_html_content = widgets.HTML("")
+
     def right(self):
+        
         reward = 1
+        title = self.df.loc[self.action.numpy(), 'title']
         page_url = self.df.loc[self.action.numpy(), 'page_url']
+        
         self.model.train_step((self.action, reward))
         self.action = self.model.call()
         self.recipe_html.value = self.get_recipe_html(self.action)
-        self.click_count += 1
-        # store liked recipe
-        self.liked_recipes.append(page_url)
+
+        self.clicked_recipes_html_content.value = "<a href={page_url} target=\"_blank\" rel=\"noopener noreferrer\"> <center> {title}  </center> </a>".format(title=title, page_url=page_url) + self.clicked_recipes_html_content.value
+        
 
     def left(self):
         reward = 0
         self.model.train_step((self.action, reward))
         self.action = self.model.call()
         self.recipe_html.value = self.get_recipe_html(self.action)
-        self.click_count += 1
-        
-    def open_liked_recipe_links(self):
-        for recipe in self.liked_recipes:
-            wb_open_new(recipe)
 
     def run(self):
         
         # page header
-        display(HTML("<h1 align=\"center\"> Recipe Swiper </h2>"))
+        display(HTML("<h1 align=\"center\"> Recipe Swiper </h1>"))
         display(HTML("<center> Looking for love in a plate of food </center>"))
-        display(HTML("<br> <br> <br>"))
+        display(HTML("<br>"))
         
         display(self.recipe_html)
         display(self.swipe_buttons_box)
-        display(self.clicked_recipes_button_box)
-
+        display(self.clicked_recipes_html_title)
+        display(self.clicked_recipes_html_content)
 
         # first recipe
         self.action = self.model.call()
@@ -79,7 +68,7 @@ class Swiper():
 
         html = "<h2 align=\"center\"> " + title +  "</h2>" \
                 + "<center>" + summary +  "<center> <br>" \
-                + "<p style=\"text-align:center;\"> <a href=" + page_url + "> <img src=" + image_url + " alt=\"recipe_img\" class=\"center\"> </a> </p> "
+                + "<p style=\"text-align:center;\"> <a href={page_url} target=\"_blank\" rel=\"noopener noreferrer\"> <img src={image_url} alt=\"recipe_img\" class=\"center\"> </a> </p> ".format(page_url=page_url, image_url=image_url)
         
         return html
  
