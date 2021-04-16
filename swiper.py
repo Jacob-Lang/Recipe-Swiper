@@ -1,9 +1,8 @@
 import ipywidgets as widgets
 from IPython.display import display, clear_output, Markdown, Image, HTML
-from webbrowser import open_new as wb_open_new
 
 class Swiper():
-    """This allows a user to play the MAB via widget buttons."""
+    """This allows a user interact with the ML model via widget buttons."""
     
     def __init__(self, df,  model):
         self.df = df
@@ -16,13 +15,14 @@ class Swiper():
         self.swipe_left.on_click(lambda _ : self.left())
         self.swipe_right.on_click(lambda _ : self.right())
 
+        # content widgets
         self.recipe_html = widgets.HTML()
         self.swipe_buttons_box = widgets.HBox([self.swipe_left, self.swipe_right], layout=widgets.Layout(justify_content='center'))
         self.clicked_recipes_html_title = widgets.HTML("<br> <h3 align=\"center\"> Liked recipes: </h3>")
         self.clicked_recipes_html_content = widgets.HTML("")
 
+    # when "yes" button is clicked
     def right(self):
-        
         reward = 1
         title = self.df.loc[self.action.numpy(), 'title']
         page_url = self.df.loc[self.action.numpy(), 'page_url']
@@ -33,13 +33,14 @@ class Swiper():
 
         self.clicked_recipes_html_content.value = "<a href={page_url} target=\"_blank\" rel=\"noopener noreferrer\"> <center> {title}  </center> </a>".format(title=title, page_url=page_url) + self.clicked_recipes_html_content.value
         
-
+    # when "no" button is clicked
     def left(self):
         reward = 0
         self.model.train_step((self.action, reward))
         self.action = self.model.call()
         self.recipe_html.value = self.get_recipe_html(self.action)
-
+    
+    # upon starting
     def run(self):
         
         # page header
@@ -59,7 +60,8 @@ class Swiper():
     def reset():
         # add button for reset
         pass
-            
+    
+    # helper function to get html for a given recipe
     def get_recipe_html(self, action):
         title = self.df.loc[action.numpy(), 'title']
         summary = self.df.loc[action.numpy(), 'summary']
