@@ -46,6 +46,8 @@ class Swiper():
         # page header
         display(HTML("<h1 align=\"center\"> Recipe Swiper </h1>"))
         display(HTML("<center> Looking for love in a plate of food </center>"))
+        display(HTML("<center> This app uses AI to learn from your swipes and suggest recipes you will love! </center>"))
+        display(HTML("<center> ... the more you swipe the better the suggestions. </center>"))
         display(HTML("<br>"))
         
         display(self.recipe_html)
